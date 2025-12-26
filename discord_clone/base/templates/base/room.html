@@ -10,14 +10,29 @@
     </h1>
 
 </div>
+Room Name: <br>
+<h2>
+    {{room.name}}</h2>
 
-<h2>{{room.name}}</h2>
-
+<br>
+Decription : 
 <br>
         <h3>
             {{room.description}}
         </h3>
 
+<hr>
+Messages:
+<br>
 
+<div>
+    <div>
+
+        <small>@{{room.host.username}}</small>
+        <br>
+        
+
+    </div>
+</div>
 
 {% endblock %}
