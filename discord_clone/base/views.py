@@ -1,36 +1,31 @@
-from django.shortcuts import render, redirect
-from .models import Room
+from django.shortcuts import render, redirect  # type: ignore
+from .models import Room, Topic
+from django.db.models import Q
 from .forms import RoomForm
 # Create your views here.
 
 
-# rooms = [
-#     {'id': 1, 'name': 'Python Basics'},
-#     {'id': 2, 'name': 'JAVA Basics'},
-#     {'id': 3, 'name': 'C++ Basics'}
-# ]
-
 def home(request):
+    q = request.GET.get('q', '').strip() if request.GET.get('q') != None else '' 
+    rooms = Room.objects.filter(Q(topic__name__icontains = q) |
+                                Q(name__icontains = q) |
+                                Q(description__icontains = q) 
+                                ) 
+    topics = Topic.objects.all() 
 
-    rooms =  Room.objects.all()    
+    room_count = int(rooms.count())  
 
-    return render(request, 'base/home.html', {'rooms' : rooms})
+    return render(request, 'base/home.html', {'rooms' : rooms, 'topics': topics, 'room_count': room_count})
+
 
 def room(request, pk):
-
-    # room_details = None
-
-    # for i in rooms:
-
-    #     if i['id'] == int(pk):
-
-    #         room_details = i
 
     room_details = Room.objects.get(id=pk)
 
     context = {'room' : room_details}
 
     return render(request, 'base/room.html', context)
+
 
 def createRoom(request):
     form = RoomForm()
@@ -46,6 +41,7 @@ def createRoom(request):
 
     return render(request, 'base/room_form.html', context)
 
+
 def updateRoom(request, pk):
 
     room = Room.objects.get(id=pk)
@@ -59,9 +55,9 @@ def updateRoom(request, pk):
 
             return redirect('home')
 
-
     context = {'form':form}
     return render(request, 'base/room_form.html', context)
+
 
 def deleteRoom(request, pk):
     room = Room.objects.get(id=pk)
